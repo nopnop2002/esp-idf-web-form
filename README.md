@@ -1,7 +1,7 @@
 # esp-idf-web-form
 WEB Form example for ESP-IDF.   
 ESP-IDF contains a lot of sample code, but there is no sample to create FORM on the WEB and input data from FORM.   
-No library other than ESP-IDF is required.   
+No library other than ESP-IDF is required to read the data from the WEB page.   
 
 I referred [here](https://randomnerdtutorials.com/esp32-esp8266-input-data-html-form/).   
 
