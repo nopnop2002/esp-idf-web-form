@@ -1,0 +1,68 @@
+menu "Application Configuration"
+
+	menu "WiFi Setting"
+
+		config ESP_WIFI_SSID
+			string "WiFi SSID"
+			default "myssid"
+			help
+				SSID (network name) to connect to.
+
+		config ESP_WIFI_PASSWORD
+			string "WiFi Password"
+			default "mypassword"
+			help
+				WiFi password (WPA or WPA2) to connect to.
+
+		config ESP_MAXIMUM_RETRY
+			int "Maximum retry"
+			default 5
+			help
+				Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is really inexistent.
+
+		config MDNS_HOSTNAME
+			string "mDNS Hostname"
+			default "esp32-server"
+			help
+				The mDNS host name used by the ESP32.
+
+		config STATIC_IP
+			bool "Enable Static IP Address"
+			default false
+			help
+				Enable Static IP Address.
+
+		config STATIC_IP_ADDRESS
+			depends on STATIC_IP
+			string "Static IP Address"
+			default "192.168.10.100"
+			help
+				Static IP Address for Station.
+
+		config STATIC_GW_ADDRESS
+			depends on STATIC_IP
+			string "Static GW Address"
+			default "192.168.10.1"
+			help
+				Static GW Address for Station.
+
+		config STATIC_NM_ADDRESS
+			depends on STATIC_IP
+			string "Static Netmask"
+			default "255.255.255.0"
+			help
+				Static Netmask for Station.
+
+	endmenu
+
+	menu "HTTP Server Setting"
+
+		config WEB_PORT
+			int "HTTP Server Port"
+			default 8000
+			help
+				HTTP server port to use.
+
+	endmenu
+
+endmenu
