@@ -260,7 +260,7 @@ static esp_err_t root_submit4_handler(httpd_req_t *req)
 
 
 
-/* Function to start the file server */
+/* Function to start the web server */
 esp_err_t start_server(const char *base_path, int port)
 {
 	httpd_handle_t server = NULL;
@@ -338,7 +338,7 @@ void http_server_task(void *pvParameters)
 	
 	URL_t urlBuf;
 	while(1) {
-		//Waiting for HTTP event.
+		// Waiting for submit
 		if (xQueueReceive(xQueueHttp, &urlBuf, portMAX_DELAY) == pdTRUE) {
 			ESP_LOGI(TAG, "url=%s", urlBuf.url);
 			ESP_LOGI(TAG, "parameter=%s", urlBuf.parameter);
