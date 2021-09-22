@@ -48,12 +48,15 @@ Input text/checkbox/radio and submit.
 The read data is saved in the NVS area.   
 You can clear the NVS area with this command:   
 ```
-idf.py erase flash
+idf.py erase_flash
 ```
 
-![web-page-1](https://user-images.githubusercontent.com/6020549/134129019-12ebc497-0f04-4b08-9061-ecb7553a038b.jpg)
-![web-page-2](https://user-images.githubusercontent.com/6020549/134129023-e7fa075a-fecb-449b-bf0d-329c0069803a.jpg)
-![web-page-3](https://user-images.githubusercontent.com/6020549/134129024-b34f8475-39a9-48cf-bbdd-7a065f5bcc56.jpg)
-![web-page-4](https://user-images.githubusercontent.com/6020549/134129027-a734afa1-dd00-45c6-8a5c-90a42fca3728.jpg)
-![web-page-5](https://user-images.githubusercontent.com/6020549/134129029-a426d73f-e7f6-4834-b8be-85054083f5f9.jpg)
+![web-page-1](https://user-images.githubusercontent.com/6020549/134284813-1922b62a-c03e-4842-a46d-5395cbf89f3a.jpg)
+![web-page-2](https://user-images.githubusercontent.com/6020549/134284820-baa01fb7-42ee-4a80-93cf-02969fa1d4c6.jpg)
+![web-page-3](https://user-images.githubusercontent.com/6020549/134284824-6a8d9b7e-5d40-4c89-8858-3050e7f6bbff.jpg)
+![web-page-4](https://user-images.githubusercontent.com/6020549/134284827-f1e8ca4e-2d42-4ea7-b418-517abbf3e861.jpg)
+![web-page-5](https://user-images.githubusercontent.com/6020549/134284835-e9b83f12-b362-44a5-875d-932cc66ef319.jpg)
+
+# HTML Header
+You can set your HTML Header to html/head.html.
 

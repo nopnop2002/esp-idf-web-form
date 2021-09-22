@@ -74,6 +74,60 @@ esp_err_t load_key_value(char * key, char * value, size_t size)
 	return err;
 }
 
+int find_value(char * key, char * parameter, char * value) 
+{
+	//char * addr1;
+	char * addr1 = strstr(parameter, key);
+	if (addr1 == NULL) return 0;
+	ESP_LOGD(TAG, "addr1=%s", addr1);
+
+	char * addr2 = addr1 + strlen(key);
+	ESP_LOGD(TAG, "addr2=[%s]", addr2);
+
+	char * addr3 = strstr(addr2, "&");
+	ESP_LOGD(TAG, "addr3=%p", addr3);
+	if (addr3 == NULL) {
+		strcpy(value, addr2);
+	} else {
+		int length = addr3-addr2;
+		ESP_LOGD(TAG, "addr2=%p addr3=%p length=%d", addr2, addr3, length);
+		strncpy(value, addr2, length);
+		value[length] = 0;
+	}
+	ESP_LOGI(TAG, "key=[%s] value=[%s]", key, value);
+	return strlen(value);
+}
+
+static esp_err_t file2html(httpd_req_t *req, char * filename) {
+	ESP_LOGI(TAG, "Reading %s", filename);
+	FILE* fhtml = fopen(filename, "r");
+	if (fhtml == NULL) {
+		return ESP_FAIL;
+	} else {
+		char line[128];
+		while (fgets(line, sizeof(line), fhtml) != NULL) {
+			size_t linelen = strlen(line);
+			//remove EOL (CR or LF)
+			for (int i=linelen;i>0;i--) {
+				if (line[i-1] == 0x0a) {
+					line[i-1] = 0;
+				} else if (line[i-1] == 0x0d) {
+					line[i-1] = 0;
+				} else {
+					break;
+				}
+			}
+			ESP_LOGD(TAG, "line=[%s]", line);
+			esp_err_t ret = httpd_resp_sendstr_chunk(req, line);
+			if (ret != ESP_OK) {
+				ESP_LOGE(TAG, "httpd_resp_sendstr_chunk fail %d", ret);
+			}
+		}
+		fclose(fhtml);
+	}
+	return ESP_OK;
+}
+
 /* HTTP ROOT handler */
 static esp_err_t root_get_handler(httpd_req_t *req)
 {
@@ -83,19 +137,38 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	esp_err_t err;
 
 	// Send HTML header
-	httpd_resp_sendstr_chunk(req, "<!DOCTYPE html><html><body>");
+	httpd_resp_sendstr_chunk(req, "<!DOCTYPE html><html>");
+	file2html(req, "/html/head.html");
+
+	httpd_resp_sendstr_chunk(req, "<body>");
 	httpd_resp_sendstr_chunk(req, "<h1>WEB Form Demo using ESP-IDF</h1>");
+
+	strcpy(key, "submit1");
+	char text1[32] = {0};
+	char text2[32] = {0};
+	err = load_key_value(key, parameter, sizeof(parameter));
+	ESP_LOGI(TAG, "%s=%d", key, err);
+	if (err == ESP_OK) {
+		ESP_LOGI(TAG, "parameter=[%s]", parameter);
+		find_value("text1=", parameter, text1);
+		find_value("text2=", parameter, text2);
+	}
 
 	httpd_resp_sendstr_chunk(req, "<h2>input text</h2>");
 	httpd_resp_sendstr_chunk(req, "<form method=\"get\" action=\"/submit1\">");
-	httpd_resp_sendstr_chunk(req, "input1: <input type=\"text\" name=\"input1\">");
+	//httpd_resp_sendstr_chunk(req, "text1: <input type=\"text\" name=\"text1\">");
+	httpd_resp_sendstr_chunk(req, "text1: <input type=\"text\" name=\"text1\" value=\"");
+	if (strlen(text1)) httpd_resp_sendstr_chunk(req, text1);
+	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
-	httpd_resp_sendstr_chunk(req, "input2: <input type=\"text\" name=\"input2\">");
+	//httpd_resp_sendstr_chunk(req, "text2: <input type=\"text\" name=\"text2\">");
+	httpd_resp_sendstr_chunk(req, "text2: <input type=\"text\" name=\"text2\" value=\"");
+	if (strlen(text2)) httpd_resp_sendstr_chunk(req, text2);
+	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" value=\"Submit1\">");
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
-	strcpy(key, "submit1");
 	err = load_key_value(key, parameter, sizeof(parameter));
 	ESP_LOGI(TAG, "%s=%d", key, err);
 	if (err == ESP_OK) {
@@ -107,16 +180,39 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 
 	httpd_resp_sendstr_chunk(req, "<hr>");
 
-	httpd_resp_sendstr_chunk(req, "<h2>input text</h2>");
+	strcpy(key, "submit2");
+	char number1[16] = {0};
+	char number2[16] = {0};
+	char number3[16] = {0};
+	err = load_key_value(key, parameter, sizeof(parameter));
+	ESP_LOGI(TAG, "%s=%d", key, err);
+	if (err == ESP_OK) {
+		ESP_LOGI(TAG, "parameter=[%s]", parameter);
+		find_value("number1=", parameter, number1);
+		find_value("number2=", parameter, number2);
+		find_value("number3=", parameter, number3);
+	}
+
+	httpd_resp_sendstr_chunk(req, "<h2>input number</h2>");
 	httpd_resp_sendstr_chunk(req, "<form method=\"get\" action=\"/submit2\">");
-	httpd_resp_sendstr_chunk(req, "input3: <input type=\"text\" name=\"input3\">");
+	//httpd_resp_sendstr_chunk(req, "number1(2 Digit): <input type=\"number\" class=\"dig2\" name=\"number1\">");
+	httpd_resp_sendstr_chunk(req, "number1(2 Digit): <input type=\"number\" class=\"dig2\" name=\"number1\" value=\"");
+	if (strlen(number1)) httpd_resp_sendstr_chunk(req, number1);
+	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
-	httpd_resp_sendstr_chunk(req, "input4: <input type=\"text\" name=\"input4\">");
+	//httpd_resp_sendstr_chunk(req, "number2(4 Digit): <input type=\"number\" class=\"dig4\" name=\"number2\">");
+	httpd_resp_sendstr_chunk(req, "number2(4 Digit): <input type=\"number\" class=\"dig4\" name=\"number2\" value=\"");
+	if (strlen(number2)) httpd_resp_sendstr_chunk(req, number2);
+	httpd_resp_sendstr_chunk(req, "\">");
+	httpd_resp_sendstr_chunk(req, "<br>");
+	//httpd_resp_sendstr_chunk(req, "number3(6 Digit): <input type=\"number\" class=\"dig6\" name=\"number3\">");
+	httpd_resp_sendstr_chunk(req, "number3(6 Digit): <input type=\"number\" class=\"dig6\" name=\"number3\" value=\"");
+	if (strlen(number3)) httpd_resp_sendstr_chunk(req, number3);
+	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" value=\"Submit2\">");
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
-	strcpy(key, "submit2");
 	err = load_key_value(key, parameter, sizeof(parameter));
 	ESP_LOGI(TAG, "%s=%d", key, err);
 	if (err == ESP_OK) {
@@ -128,16 +224,40 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 
 	httpd_resp_sendstr_chunk(req, "<hr>");
 
+	strcpy(key, "submit3");
+	char check1[4] = {0};
+	char check2[4] = {0};
+	char check3[4] = {0};
+	err = load_key_value(key, parameter, sizeof(parameter));
+	ESP_LOGI(TAG, "%s=%d", key, err);
+	if (err == ESP_OK) {
+		ESP_LOGI(TAG, "parameter=[%s]", parameter);
+		find_value("check1=", parameter, check1);
+		find_value("check2=", parameter, check2);
+		find_value("check3=", parameter, check3);
+	}
+
 	httpd_resp_sendstr_chunk(req, "<h2>input checkbox</h2>");
 	httpd_resp_sendstr_chunk(req, "<form method=\"get\" action=\"/submit3\">");
-	httpd_resp_sendstr_chunk(req, "<input type=\"checkbox\" name=\"check1\">RED");
-	httpd_resp_sendstr_chunk(req, "<input type=\"checkbox\" name=\"check2\">GREEN");
-	httpd_resp_sendstr_chunk(req, "<input type=\"checkbox\" name=\"check3\">BLUE");
+	if (strlen(check1)) {
+		httpd_resp_sendstr_chunk(req, "<input type=\"checkbox\" name=\"check1\" checked=\"checked\">RED");
+	} else {
+		httpd_resp_sendstr_chunk(req, "<input type=\"checkbox\" name=\"check1\">GREEN");
+	}
+	if (strlen(check2)) {
+		httpd_resp_sendstr_chunk(req, "<input type=\"checkbox\" name=\"check2\" checked=\"checked\">GREEN");
+	} else {
+		httpd_resp_sendstr_chunk(req, "<input type=\"checkbox\" name=\"check2\">GREEN");
+	}
+	if (strlen(check3)) {
+		httpd_resp_sendstr_chunk(req, "<input type=\"checkbox\" name=\"check3\" checked=\"checked\">BLUE");
+	} else {
+		httpd_resp_sendstr_chunk(req, "<input type=\"checkbox\" name=\"check3\">BLUE");
+	}
 	httpd_resp_sendstr_chunk(req, "<br>");
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" value=\"Submit3\">");
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
-	strcpy(key, "submit3");
 	err = load_key_value(key, parameter, sizeof(parameter));
 	ESP_LOGI(TAG, "%s=%d", key, err);
 	if (err == ESP_OK) {
@@ -149,16 +269,37 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 
 	httpd_resp_sendstr_chunk(req, "<hr>");
 
+	strcpy(key, "submit4");
+	char radio[16] = {0};
+	err = load_key_value(key, parameter, sizeof(parameter));
+	ESP_LOGI(TAG, "%s=%d", key, err);
+	if (err == ESP_OK) {
+		ESP_LOGI(TAG, "parameter=[%s]", parameter);
+		find_value("radio=", parameter, radio);
+	}
+
 	httpd_resp_sendstr_chunk(req, "<h2>input radio</h2>");
-	httpd_resp_sendstr_chunk(req, "<form method=\"get\" action=\"/submit4\">");
-	httpd_resp_sendstr_chunk(req, "<input type=\"radio\" name=\"radio1\">RED");
-	httpd_resp_sendstr_chunk(req, "<input type=\"radio\" name=\"radio2\">GREEN");
-	httpd_resp_sendstr_chunk(req, "<input type=\"radio\" name=\"radio3\">BLUE");
+	httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/submit4\">");
+	if (strcmp(radio, "RED") == 0) {
+		httpd_resp_sendstr_chunk(req, "<input type=\"radio\" name=\"radio\" value=\"RED\" checked=\"checked\">RED");
+	} else {
+		httpd_resp_sendstr_chunk(req, "<input type=\"radio\" name=\"radio\" value=\"RED\">RED");
+	}
+	if (strcmp(radio, "GREEN") == 0) {
+		httpd_resp_sendstr_chunk(req, "<input type=\"radio\" name=\"radio\" value=\"GREEN\" checked=\"checked\">GREEN");
+	} else {
+		httpd_resp_sendstr_chunk(req, "<input type=\"radio\" name=\"radio\" value=\"GREEN\">GREEN");
+	}
+	if (strcmp(radio, "BLUE") == 0) {
+		httpd_resp_sendstr_chunk(req, "<input type=\"radio\" name=\"radio\" value=\"BLUE\" checked=\"checked\">BLUE");
+	} else {
+		httpd_resp_sendstr_chunk(req, "<input type=\"radio\" name=\"radio\" value=\"BLUE\">BLUE");
+	}
+
 	httpd_resp_sendstr_chunk(req, "<br>");
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" value=\"Submit4\">");
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
-	strcpy(key, "submit4");
 	err = load_key_value(key, parameter, sizeof(parameter));
 	ESP_LOGI(TAG, "%s=%d", key, err);
 	if (err == ESP_OK) {
@@ -241,12 +382,33 @@ static esp_err_t root_submit3_handler(httpd_req_t *req)
 static esp_err_t root_submit4_handler(httpd_req_t *req)
 {
 	ESP_LOGI(TAG, "root_submit4_handler req->uri=[%s]", req->uri);
+	ESP_LOGI(TAG, "root_submit4_handler content length %d", req->content_len);
+	char*  buf = malloc(req->content_len + 1);
+	size_t off = 0;
+    while (off < req->content_len) {
+        /* Read data received in the request */
+        int ret = httpd_req_recv(req, buf + off, req->content_len - off);
+        if (ret <= 0) {
+            if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
+                httpd_resp_send_408(req);
+            }
+            free (buf);
+            return ESP_FAIL;
+        }
+        off += ret;
+        ESP_LOGI(TAG, "root_submit4_handler recv length %d", ret);
+    }
+    buf[off] = '\0';
+    ESP_LOGI(TAG, "root_submit4_handler buf=[%s]", buf);
+
 	URL_t urlBuf;
 	strcpy(urlBuf.url, "submit4");
-	strcpy(urlBuf.parameter, &req->uri[9]);
+	//strcpy(urlBuf.parameter, &req->uri[9]);
+	strcpy(urlBuf.parameter, buf);
 	if (xQueueSend(xQueueHttp, &urlBuf, portMAX_DELAY) != pdPASS) {
 		ESP_LOGE(TAG, "xQueueSend Fail");
 	}
+	free(buf);
 
 	/* Redirect onto root to see the updated file list */
 	httpd_resp_set_status(req, "303 See Other");
@@ -314,7 +476,10 @@ esp_err_t start_server(const char *base_path, int port)
 
 	httpd_uri_t root_submit4 = {
 		.uri	   = "/submit4",
+#if 0
 		.method    = HTTP_GET,
+#endif
+		.method    = HTTP_POST,
 		.handler   = root_submit4_handler,
 		//.user_ctx  = server_data	// Pass server data as context
 	};
