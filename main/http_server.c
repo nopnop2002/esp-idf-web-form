@@ -128,7 +128,7 @@ static esp_err_t file2html(httpd_req_t *req, char * filename) {
 	return ESP_OK;
 }
 
-/* HTTP ROOT handler */
+/* HTTP get handler */
 static esp_err_t root_get_handler(httpd_req_t *req)
 {
 	ESP_LOGI(TAG, "root_get_handler req->uri=[%s]", req->uri);
@@ -155,18 +155,16 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	}
 
 	httpd_resp_sendstr_chunk(req, "<h2>input text</h2>");
-	httpd_resp_sendstr_chunk(req, "<form method=\"get\" action=\"/submit1\">");
-	//httpd_resp_sendstr_chunk(req, "text1: <input type=\"text\" name=\"text1\">");
+	httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/post\">");
 	httpd_resp_sendstr_chunk(req, "text1: <input type=\"text\" name=\"text1\" value=\"");
 	if (strlen(text1)) httpd_resp_sendstr_chunk(req, text1);
 	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
-	//httpd_resp_sendstr_chunk(req, "text2: <input type=\"text\" name=\"text2\">");
 	httpd_resp_sendstr_chunk(req, "text2: <input type=\"text\" name=\"text2\" value=\"");
 	if (strlen(text2)) httpd_resp_sendstr_chunk(req, text2);
 	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
-	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" value=\"Submit1\">");
+	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit1\">");
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
@@ -194,23 +192,20 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	}
 
 	httpd_resp_sendstr_chunk(req, "<h2>input number</h2>");
-	httpd_resp_sendstr_chunk(req, "<form method=\"get\" action=\"/submit2\">");
-	//httpd_resp_sendstr_chunk(req, "number1(2 Digit): <input type=\"number\" class=\"dig2\" name=\"number1\">");
+	httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/post\">");
 	httpd_resp_sendstr_chunk(req, "number1(2 Digit): <input type=\"number\" class=\"dig2\" name=\"number1\" value=\"");
 	if (strlen(number1)) httpd_resp_sendstr_chunk(req, number1);
 	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
-	//httpd_resp_sendstr_chunk(req, "number2(4 Digit): <input type=\"number\" class=\"dig4\" name=\"number2\">");
 	httpd_resp_sendstr_chunk(req, "number2(4 Digit): <input type=\"number\" class=\"dig4\" name=\"number2\" value=\"");
 	if (strlen(number2)) httpd_resp_sendstr_chunk(req, number2);
 	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
-	//httpd_resp_sendstr_chunk(req, "number3(6 Digit): <input type=\"number\" class=\"dig6\" name=\"number3\">");
 	httpd_resp_sendstr_chunk(req, "number3(6 Digit): <input type=\"number\" class=\"dig6\" name=\"number3\" value=\"");
 	if (strlen(number3)) httpd_resp_sendstr_chunk(req, number3);
 	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
-	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" value=\"Submit2\">");
+	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit2\">");
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
@@ -238,7 +233,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	}
 
 	httpd_resp_sendstr_chunk(req, "<h2>input checkbox</h2>");
-	httpd_resp_sendstr_chunk(req, "<form method=\"get\" action=\"/submit3\">");
+	httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/post\">");
 	if (strlen(check1)) {
 		httpd_resp_sendstr_chunk(req, "<input type=\"checkbox\" name=\"check1\" checked=\"checked\">RED");
 	} else {
@@ -255,7 +250,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 		httpd_resp_sendstr_chunk(req, "<input type=\"checkbox\" name=\"check3\">BLUE");
 	}
 	httpd_resp_sendstr_chunk(req, "<br>");
-	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" value=\"Submit3\">");
+	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit3\">");
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
@@ -279,7 +274,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	}
 
 	httpd_resp_sendstr_chunk(req, "<h2>input radio</h2>");
-	httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/submit4\">");
+	httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/post\">");
 	if (strcmp(radio, "RED") == 0) {
 		httpd_resp_sendstr_chunk(req, "<input type=\"radio\" name=\"radio\" value=\"RED\" checked=\"checked\">RED");
 	} else {
@@ -297,7 +292,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	}
 
 	httpd_resp_sendstr_chunk(req, "<br>");
-	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" value=\"Submit4\">");
+	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit4\">");
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
@@ -318,91 +313,33 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	return ESP_OK;
 }
 
-/* HTTP SUMBIT handler */
-static esp_err_t root_submit1_handler(httpd_req_t *req)
+/* HTTP post handler */
+static esp_err_t root_post_handler(httpd_req_t *req)
 {
-	ESP_LOGI(TAG, "root_submit1_handler req->uri=[%s]", req->uri);
-	URL_t urlBuf;
-	strcpy(urlBuf.url, "submit1");
-	strcpy(urlBuf.parameter, &req->uri[9]);
-	if (xQueueSend(xQueueHttp, &urlBuf, portMAX_DELAY) != pdPASS) {
-		ESP_LOGE(TAG, "xQueueSend Fail");
-	}
-
-	/* Redirect onto root to see the updated file list */
-	httpd_resp_set_status(req, "303 See Other");
-	httpd_resp_set_hdr(req, "Location", "/");
-#ifdef CONFIG_EXAMPLE_HTTPD_CONN_CLOSE_HEADER
-	httpd_resp_set_hdr(req, "Connection", "close");
-#endif
-	httpd_resp_sendstr(req, "post successfully");
-	return ESP_OK;
-}
-
-static esp_err_t root_submit2_handler(httpd_req_t *req)
-{
-	ESP_LOGI(TAG, "root_submit2_handler req->uri=[%s]", req->uri);
-	URL_t urlBuf;
-	strcpy(urlBuf.url, "submit2");
-	strcpy(urlBuf.parameter, &req->uri[9]);
-	if (xQueueSend(xQueueHttp, &urlBuf, portMAX_DELAY) != pdPASS) {
-		ESP_LOGE(TAG, "xQueueSend Fail");
-	}
-
-	/* Redirect onto root to see the updated file list */
-	httpd_resp_set_status(req, "303 See Other");
-	httpd_resp_set_hdr(req, "Location", "/");
-#ifdef CONFIG_EXAMPLE_HTTPD_CONN_CLOSE_HEADER
-	httpd_resp_set_hdr(req, "Connection", "close");
-#endif
-	httpd_resp_sendstr(req, "post successfully");
-	return ESP_OK;
-}
-
-static esp_err_t root_submit3_handler(httpd_req_t *req)
-{
-	ESP_LOGI(TAG, "root_submit3_handler req->uri=[%s]", req->uri);
-	URL_t urlBuf;
-	strcpy(urlBuf.url, "submit3");
-	strcpy(urlBuf.parameter, &req->uri[9]);
-	if (xQueueSend(xQueueHttp, &urlBuf, portMAX_DELAY) != pdPASS) {
-		ESP_LOGE(TAG, "xQueueSend Fail");
-	}
-
-	/* Redirect onto root to see the updated file list */
-	httpd_resp_set_status(req, "303 See Other");
-	httpd_resp_set_hdr(req, "Location", "/");
-#ifdef CONFIG_EXAMPLE_HTTPD_CONN_CLOSE_HEADER
-	httpd_resp_set_hdr(req, "Connection", "close");
-#endif
-	httpd_resp_sendstr(req, "post successfully");
-	return ESP_OK;
-}
-
-static esp_err_t root_submit4_handler(httpd_req_t *req)
-{
-	ESP_LOGI(TAG, "root_submit4_handler req->uri=[%s]", req->uri);
-	ESP_LOGI(TAG, "root_submit4_handler content length %d", req->content_len);
+	ESP_LOGI(TAG, "root_post_handler req->uri=[%s]", req->uri);
+	ESP_LOGI(TAG, "root_post_handler content length %d", req->content_len);
 	char*  buf = malloc(req->content_len + 1);
 	size_t off = 0;
-    while (off < req->content_len) {
-        /* Read data received in the request */
-        int ret = httpd_req_recv(req, buf + off, req->content_len - off);
-        if (ret <= 0) {
-            if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
-                httpd_resp_send_408(req);
-            }
-            free (buf);
-            return ESP_FAIL;
-        }
-        off += ret;
-        ESP_LOGI(TAG, "root_submit4_handler recv length %d", ret);
-    }
-    buf[off] = '\0';
-    ESP_LOGI(TAG, "root_submit4_handler buf=[%s]", buf);
+	while (off < req->content_len) {
+		/* Read data received in the request */
+		int ret = httpd_req_recv(req, buf + off, req->content_len - off);
+		if (ret <= 0) {
+			if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
+				httpd_resp_send_408(req);
+			}
+			free (buf);
+			return ESP_FAIL;
+		}
+		off += ret;
+		ESP_LOGI(TAG, "root_post_handler recv length %d", ret);
+	}
+	buf[off] = '\0';
+	ESP_LOGI(TAG, "root_post_handler buf=[%s]", buf);
 
 	URL_t urlBuf;
-	strcpy(urlBuf.url, "submit4");
+	find_value("submit=", buf, urlBuf.url);
+	ESP_LOGI(TAG, "urlBuf.url=[%s]", urlBuf.url);
+	//strcpy(urlBuf.url, "submit4");
 	//strcpy(urlBuf.parameter, &req->uri[9]);
 	strcpy(urlBuf.parameter, buf);
 	if (xQueueSend(xQueueHttp, &urlBuf, portMAX_DELAY) != pdPASS) {
@@ -440,50 +377,23 @@ esp_err_t start_server(const char *base_path, int port)
 		return ESP_FAIL;
 	}
 
-	/* URI handler for ROOT */
-	httpd_uri_t root_get = {
-		.uri	   = "/",	// Match all URIs of type /path/to/file
+	/* URI handler for get */
+	httpd_uri_t _root_get_handler = {
+		.uri	   = "/",
 		.method    = HTTP_GET,
 		.handler   = root_get_handler,
 		//.user_ctx  = server_data	// Pass server data as context
 	};
-	httpd_register_uri_handler(server, &root_get);
+	httpd_register_uri_handler(server, &_root_get_handler);
 
-	/* URI handler for SUMBIT */
-	httpd_uri_t root_submit1 = {
-		.uri	   = "/submit1",
-		.method    = HTTP_GET,
-		.handler   = root_submit1_handler,
-		//.user_ctx  = server_data	// Pass server data as context
-	};
-	httpd_register_uri_handler(server, &root_submit1);
-
-	httpd_uri_t root_submit2 = {
-		.uri	   = "/submit2",
-		.method    = HTTP_GET,
-		.handler   = root_submit2_handler,
-		//.user_ctx  = server_data	// Pass server data as context
-	};
-	httpd_register_uri_handler(server, &root_submit2);
-
-	httpd_uri_t root_submit3 = {
-		.uri	   = "/submit3",
-		.method    = HTTP_GET,
-		.handler   = root_submit3_handler,
-		//.user_ctx  = server_data	// Pass server data as context
-	};
-	httpd_register_uri_handler(server, &root_submit3);
-
-	httpd_uri_t root_submit4 = {
-		.uri	   = "/submit4",
-#if 0
-		.method    = HTTP_GET,
-#endif
+	/* URI handler for post */
+	httpd_uri_t _root_post_handler = {
+		.uri	   = "/post",
 		.method    = HTTP_POST,
-		.handler   = root_submit4_handler,
+		.handler   = root_post_handler,
 		//.user_ctx  = server_data	// Pass server data as context
 	};
-	httpd_register_uri_handler(server, &root_submit4);
+	httpd_register_uri_handler(server, &_root_post_handler);
 
 
 	return ESP_OK;
