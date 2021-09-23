@@ -50,7 +50,7 @@ You can clear the NVS area with this command:
 ```
 idf.py erase_flash
 ```
-![web-page-1](https://user-images.githubusercontent.com/6020549/134437800-d2a8fc71-23a0-48f7-ab03-63fab445ae84.jpg)
+![web-page-1](https://user-images.githubusercontent.com/6020549/134438834-7443b548-30ac-48bc-9831-6d629246b5ea.jpg)
 ![web-page-2](https://user-images.githubusercontent.com/6020549/134437801-8a1521a3-e39c-4acb-a4a6-2fac554ffd43.jpg)
 
 # HTML Header
