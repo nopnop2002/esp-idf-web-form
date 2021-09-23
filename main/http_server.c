@@ -236,7 +236,7 @@ esp_err_t Image2Html(httpd_req_t *req, char * filename, char * type)
 			}
 		}
 		fclose(fhtml);
-		httpd_resp_sendstr_chunk(req, "\" />");
+		httpd_resp_sendstr_chunk(req, "\">");
 	}
 	return ESP_OK;
 }

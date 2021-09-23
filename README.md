@@ -59,14 +59,14 @@ You can set your HTML Header to html/head.html.
 # How to browse image data using built-in http server   
 Even if there are image files in SPIFFS, the esp-idf http server does not support this:   
 ```
-httpd_resp_sendstr_chunk(req, "<img src=\"/spiffs/picture.png\" width=\"128\" height=\"128\">");
+httpd_resp_sendstr_chunk(req, "<img src=\"/spiffs/picture.png\">");
 ```
 
 You need to convert the image file to base64.   
 ```
 httpd_resp_sendstr_chunk(req, "<img src=\"data:image/png;base64,");
 httpd_resp_sendstr_chunk(req, (char *)BASE64_ENCODE_STRING);
-httpd_resp_sendstr_chunk(req, "\" />");
+httpd_resp_sendstr_chunk(req, "\">");
 ```
 
 Images in png format are stored in the image folder.   
