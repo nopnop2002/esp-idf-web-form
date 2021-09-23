@@ -62,7 +62,7 @@ Even if there are image files in SPIFFS, the esp-idf http server does not suppor
 httpd_resp_sendstr_chunk(req, "<img src=\"/spiffs/picture.png\">");
 ```
 
-You need to convert the image file to base64.   
+You need to convert the image file to base64 string.   
 ```
 httpd_resp_sendstr_chunk(req, "<img src=\"data:image/png;base64,");
 httpd_resp_sendstr_chunk(req, (char *)BASE64_ENCODE_STRING);
