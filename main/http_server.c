@@ -9,6 +9,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <mbedtls/base64.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -98,10 +100,11 @@ int find_value(char * key, char * parameter, char * value)
 	return strlen(value);
 }
 
-static esp_err_t file2html(httpd_req_t *req, char * filename) {
+static esp_err_t Text2Html(httpd_req_t *req, char * filename) {
 	ESP_LOGI(TAG, "Reading %s", filename);
 	FILE* fhtml = fopen(filename, "r");
 	if (fhtml == NULL) {
+		ESP_LOGE(TAG, "fopen fail. [%s]", filename);
 		return ESP_FAIL;
 	} else {
 		char line[128];
@@ -128,6 +131,116 @@ static esp_err_t file2html(httpd_req_t *req, char * filename) {
 	return ESP_OK;
 }
 
+// Calculate the size after conversion to base64
+// http://akabanessa.blog73.fc2.com/blog-entry-83.html
+int32_t calcBase64EncodedSize(int origDataSize)
+{
+	// Number of blocks in 6-bit units (rounded up in 6-bit units)
+	int32_t numBlocks6 = ((origDataSize * 8) + 5) / 6;
+	// Number of blocks in units of 4 characters (rounded up in units of 4 characters)
+	int32_t numBlocks4 = (numBlocks6 + 3) / 4;
+	// Number of characters without line breaks
+	int32_t numNetChars = numBlocks4 * 4;
+	// Size considering line breaks every 76 characters (line breaks are "\ r \ n")
+	//return numNetChars + ((numNetChars / 76) * 2);
+	return numNetChars;
+}
+
+esp_err_t Image2Base64(char * imageFileName, char * base64FileName)
+{
+	struct stat st;
+	if (stat(imageFileName, &st) != 0) {
+		ESP_LOGE(TAG, "[%s] not found", imageFileName);
+		return ESP_FAIL;
+	}
+	ESP_LOGI(TAG, "%s st.st_size=%ld", imageFileName, st.st_size);
+
+	// Allocate image memory
+	unsigned char*	image_buffer = NULL;
+	size_t image_buffer_len = st.st_size;
+	image_buffer = malloc(image_buffer_len);
+	if (image_buffer == NULL) {
+		ESP_LOGE(TAG, "malloc fail. image_buffer_len %d", image_buffer_len);
+		return ESP_FAIL;
+	}
+
+	// Read image file
+	FILE * fp_image = fopen(imageFileName,"rb");
+	if (fp_image == NULL) {
+		ESP_LOGE(TAG, "[%s] fopen fail.", imageFileName);
+		free(image_buffer);
+		return ESP_FAIL;
+	}
+	for (int i=0;i<st.st_size;i++) {
+		fread(&image_buffer[i], sizeof(char), 1, fp_image);
+	}
+	fclose(fp_image);
+
+	// Allocate base64 memory
+	int32_t base64Size = calcBase64EncodedSize(st.st_size);
+	ESP_LOGI(TAG, "base64Size=%d", base64Size);
+
+	unsigned char* base64_buffer = NULL;
+	size_t base64_buffer_len = base64Size + 1;
+	base64_buffer = malloc(base64_buffer_len);
+	if (base64_buffer == NULL) {
+		ESP_LOGE(TAG, "malloc fail. base64_buffer_len %d", base64_buffer_len);
+		return ESP_FAIL;
+	}
+
+	// Convert from JPEG to BASE64
+	size_t encord_len;
+	esp_err_t ret = mbedtls_base64_encode(base64_buffer, base64_buffer_len, &encord_len, image_buffer, st.st_size);
+	ESP_LOGI(TAG, "mbedtls_base64_encode=%d encord_len=%d", ret, encord_len);
+
+	// Write Base64 file
+	FILE * fp_base64 = fopen(base64FileName,"w");
+	if (fp_base64 == NULL) {
+		ESP_LOGE(TAG, "[%s] open fail", base64FileName);
+		return ESP_FAIL;
+	}
+	fwrite(base64_buffer,base64_buffer_len,1,fp_base64);
+	fclose(fp_base64);
+
+	free(image_buffer);
+	free(base64_buffer);
+	return ESP_OK;
+}
+
+esp_err_t Image2Html(httpd_req_t *req, char * filename, char * type)
+{
+	FILE * fhtml = fopen(filename, "r");
+	if (fhtml == NULL) {
+		ESP_LOGE(TAG, "fopen fail. [%s]", filename);
+		return ESP_FAIL;
+	}else{
+		char  buffer[64];
+
+		if (strcmp(type, "jpeg") == 0) {
+			httpd_resp_sendstr_chunk(req, "<img src=\"data:image/jpeg;base64,");
+		} else if (strcmp(type, "jpg") == 0) {
+			httpd_resp_sendstr_chunk(req, "<img src=\"data:image/jpeg;base64,");
+		} else if (strcmp(type, "png") == 0) {
+			httpd_resp_sendstr_chunk(req, "<img src=\"data:image/png;base64,");
+		} else {
+			ESP_LOGW(TAG, "file type fail. [%s]", type);
+			httpd_resp_sendstr_chunk(req, "<img src=\"data:image/png;base64,");
+		}
+		while(1) {
+			size_t bufferSize = fread(buffer, 1, sizeof(buffer), fhtml);
+			ESP_LOGD(TAG, "bufferSize=%d", bufferSize);
+			if (bufferSize > 0) {
+				httpd_resp_send_chunk(req, buffer, bufferSize);
+			} else {
+				break;
+			}
+		}
+		fclose(fhtml);
+		httpd_resp_sendstr_chunk(req, "\" />");
+	}
+	return ESP_OK;
+}
+
 /* HTTP get handler */
 static esp_err_t root_get_handler(httpd_req_t *req)
 {
@@ -138,7 +251,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 
 	// Send HTML header
 	httpd_resp_sendstr_chunk(req, "<!DOCTYPE html><html>");
-	file2html(req, "/html/head.html");
+	Text2Html(req, "/html/head.html");
 
 	httpd_resp_sendstr_chunk(req, "<body>");
 	httpd_resp_sendstr_chunk(req, "<h1>WEB Form Demo using ESP-IDF</h1>");
@@ -165,7 +278,6 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit1\">");
-	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
 	ESP_LOGI(TAG, "%s=%d", key, err);
@@ -175,6 +287,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 		httpd_resp_sendstr_chunk(req, ":");
 		httpd_resp_sendstr_chunk(req, parameter);
 	}
+	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	httpd_resp_sendstr_chunk(req, "<hr>");
 
@@ -206,7 +319,6 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit2\">");
-	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
 	ESP_LOGI(TAG, "%s=%d", key, err);
@@ -216,6 +328,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 		httpd_resp_sendstr_chunk(req, ":");
 		httpd_resp_sendstr_chunk(req, parameter);
 	}
+	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	httpd_resp_sendstr_chunk(req, "<hr>");
 
@@ -251,7 +364,6 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	}
 	httpd_resp_sendstr_chunk(req, "<br>");
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit3\">");
-	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
 	ESP_LOGI(TAG, "%s=%d", key, err);
@@ -261,6 +373,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 		httpd_resp_sendstr_chunk(req, ":");
 		httpd_resp_sendstr_chunk(req, parameter);
 	}
+	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	httpd_resp_sendstr_chunk(req, "<hr>");
 
@@ -293,7 +406,6 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 
 	httpd_resp_sendstr_chunk(req, "<br>");
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit4\">");
-	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
 	ESP_LOGI(TAG, "%s=%d", key, err);
@@ -303,6 +415,10 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 		httpd_resp_sendstr_chunk(req, ":");
 		httpd_resp_sendstr_chunk(req, parameter);
 	}
+	httpd_resp_sendstr_chunk(req, "</form><br>");
+
+	/* Send Image to HTML file */
+	Image2Html(req, "/html/ESP-IDF.txt", "png");
 
 	/* Send remaining chunk of HTML file to complete it */
 	httpd_resp_sendstr_chunk(req, "</body></html>");

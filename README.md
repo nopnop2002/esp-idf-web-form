@@ -50,12 +50,28 @@ You can clear the NVS area with this command:
 ```
 idf.py erase_flash
 ```
-![web-page-1](https://user-images.githubusercontent.com/6020549/134334596-8cc6f1c8-a653-4826-b7b2-8ee79049b31f.jpg)
-![web-page-2](https://user-images.githubusercontent.com/6020549/134334601-1be21151-0eb1-4fb0-8d6d-20eeb9dfa06a.jpg)
-![web-page-3](https://user-images.githubusercontent.com/6020549/134334603-c464bc43-264c-46b6-bac4-3c0aac1cd11f.jpg)
-![web-page-4](https://user-images.githubusercontent.com/6020549/134334607-e767c44b-29b5-4ac2-b3b2-e7f44e24d82c.jpg)
-![web-page-5](https://user-images.githubusercontent.com/6020549/134334608-46eedaa9-6e89-4458-ad4a-8df08c48fc9a.jpg)
+![web-page-1](https://user-images.githubusercontent.com/6020549/134437800-d2a8fc71-23a0-48f7-ab03-63fab445ae84.jpg)
+![web-page-2](https://user-images.githubusercontent.com/6020549/134437801-8a1521a3-e39c-4acb-a4a6-2fac554ffd43.jpg)
 
 # HTML Header
 You can set your HTML Header to html/head.html.
 
+# How to browse image data using built-in http server   
+Even if there are image files in SPIFFS, the esp-idf http server does not support this:   
+```
+httpd_resp_sendstr_chunk(req, "<img src=\"/spiffs/picture.png\" width=\"128\" height=\"128\">");
+```
+
+You need to convert the image file to base64.   
+```
+httpd_resp_sendstr_chunk(req, "<img src=\"data:image/png;base64,");
+httpd_resp_sendstr_chunk(req, (char *)BASE64_ENCODE_STRING);
+httpd_resp_sendstr_chunk(req, "\" />");
+```
+
+Images in png format are stored in the image folder.   
+Images in base64 format are stored in the html folder.   
+I converted using the base64 command.   
+```
+$ base64 image/ESP-IDF.png > html/ESP-IDF.txt
+```
