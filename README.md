@@ -54,7 +54,8 @@ idf.py erase_flash
 ![web-page-2](https://user-images.githubusercontent.com/6020549/134437801-8a1521a3-e39c-4acb-a4a6-2fac554ffd43.jpg)
 
 # HTML Header
-You can set your HTML Header to html/head.html.
+You can set your HTML Header to html/head.html.   
+You can use your favorite CSS.   
 
 # How to browse image data using built-in http server   
 Even if there are image files in SPIFFS, the esp-idf http server does not support this:   
