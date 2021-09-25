@@ -418,7 +418,8 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
 	/* Send Image to HTML file */
-	Image2Html(req, "/html/ESP-IDF.txt", "png");
+	//Image2Html(req, "/html/ESP-IDF.txt", "png");
+	Image2Html(req, "/html/ESP-LOGO.txt", "png");
 
 	/* Send remaining chunk of HTML file to complete it */
 	httpd_resp_sendstr_chunk(req, "</body></html>");
