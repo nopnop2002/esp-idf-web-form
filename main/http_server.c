@@ -1,10 +1,10 @@
 /* HTTP Server Example
 
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
+	 This example code is in the Public Domain (or CC0 licensed, at your option.)
 
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
+	 Unless required by applicable law or agreed to in writing, this
+	 software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+	 CONDITIONS OF ANY KIND, either express or implied.
 */
 
 #include <stdio.h>
@@ -214,7 +214,7 @@ esp_err_t Image2Html(httpd_req_t *req, char * filename, char * type)
 		ESP_LOGE(TAG, "fopen fail. [%s]", filename);
 		return ESP_FAIL;
 	}else{
-		char  buffer[64];
+		char buffer[64];
 
 		if (strcmp(type, "jpeg") == 0) {
 			httpd_resp_sendstr_chunk(req, "<img src=\"data:image/jpeg;base64,");
@@ -474,7 +474,12 @@ static esp_err_t root_post_handler(httpd_req_t *req)
 	return ESP_OK;
 }
 
-
+/* favicon get handler */
+static esp_err_t favicon_get_handler(httpd_req_t *req)
+{
+	ESP_LOGI(TAG, "favicon_get_handler req->uri=[%s]", req->uri);
+	return ESP_OK;
+}
 
 /* Function to start the web server */
 esp_err_t start_server(const char *base_path, int port)
@@ -496,22 +501,30 @@ esp_err_t start_server(const char *base_path, int port)
 
 	/* URI handler for get */
 	httpd_uri_t _root_get_handler = {
-		.uri	   = "/",
-		.method    = HTTP_GET,
-		.handler   = root_get_handler,
+		.uri		 = "/",
+		.method		 = HTTP_GET,
+		.handler	 = root_get_handler,
 		//.user_ctx  = server_data	// Pass server data as context
 	};
 	httpd_register_uri_handler(server, &_root_get_handler);
 
 	/* URI handler for post */
 	httpd_uri_t _root_post_handler = {
-		.uri	   = "/post",
-		.method    = HTTP_POST,
-		.handler   = root_post_handler,
+		.uri		 = "/post",
+		.method		 = HTTP_POST,
+		.handler	 = root_post_handler,
 		//.user_ctx  = server_data	// Pass server data as context
 	};
 	httpd_register_uri_handler(server, &_root_post_handler);
 
+	/* URI handler for favicon.ico */
+	httpd_uri_t _favicon_get_handler = {
+		.uri		 = "/favicon.ico",
+		.method		 = HTTP_GET,
+		.handler	 = favicon_get_handler,
+		//.user_ctx  = server_data	// Pass server data as context
+	};
+	httpd_register_uri_handler(server, &_favicon_get_handler);
 
 	return ESP_OK;
 }
