@@ -36,7 +36,7 @@ static EventGroupHandle_t s_wifi_event_group;
  * - we are connected to the AP with an IP
  * - we failed to connect after the maximum amount of retries */
 #define WIFI_CONNECTED_BIT BIT0
-#define WIFI_FAIL_BIT		 BIT1
+#define WIFI_FAIL_BIT BIT1
 
 static int s_retry_num = 0;
 
@@ -144,16 +144,16 @@ void wifi_init_sta()
 	// wait for IP_EVENT_STA_GOT_IP
 	while(1) {
 		/* Wait forever for WIFI_CONNECTED_BIT to be set within the event group.
-			 Clear the bits beforeexiting. */
+		 Clear the bits beforeexiting. */
 		EventBits_t uxBits = xEventGroupWaitBits(s_wifi_event_group,
-			 WIFI_CONNECTED_BIT, /* The bits within the event group to waitfor. */
-			 pdTRUE,			/* WIFI_CONNECTED_BIT should be cleared before returning. */
-			 pdFALSE,			/* Don't waitfor both bits, either bit will do. */
-			 portMAX_DELAY);/* Wait forever. */
-		 if ( ( uxBits & WIFI_CONNECTED_BIT ) == WIFI_CONNECTED_BIT ){
-			 ESP_LOGI(TAG, "WIFI_CONNECTED_BIT");
-			 break;
-		 }
+			WIFI_CONNECTED_BIT, /* The bits within the event group to waitfor. */
+			pdTRUE,			/* WIFI_CONNECTED_BIT should be cleared before returning. */
+			pdFALSE,			/* Don't waitfor both bits, either bit will do. */
+			portMAX_DELAY);/* Wait forever. */
+		if ( ( uxBits & WIFI_CONNECTED_BIT ) == WIFI_CONNECTED_BIT ){
+			ESP_LOGI(TAG, "WIFI_CONNECTED_BIT");
+			break;
+		}
 	}
 	ESP_LOGI(TAG, "Got IP Address.");
 }
@@ -253,11 +253,10 @@ void app_main()
 	configASSERT( xQueueHttp );
 
 	/* Get the local IP address */
-	tcpip_adapter_ip_info_t ip_info;
-	ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
-
+	esp_netif_ip_info_t ip_info;
+	ESP_ERROR_CHECK(esp_netif_get_ip_info(esp_netif_get_handle_from_ifkey("WIFI_STA_DEF"), &ip_info));
 	char cparam0[64];
-	sprintf(cparam0, "%s", ip4addr_ntoa(&ip_info.ip));
+	sprintf(cparam0, IPSTR, IP2STR(&ip_info.ip));
 	xTaskCreate(http_server_task, "HTTP", 1024*6, (void *)cparam0, 2, NULL);
 
 	// Wait for the task to start, because cparam0 is discarded.
