@@ -1,6 +1,7 @@
 # esp-idf-web-form
 WEB Form example for ESP-IDF.   
-ESP-IDF contains a lot of sample code, but there is no sample to create FORM on the WEB and input data from FORM.   
+ESP-IDF contains a lot of example code, but there is no example to create FORM on the WEB and input data from FORM.   
+This project reads value from FORM on the WEB and save in the NVS area.   
 No library other than ESP-IDF is required to read the data from the WEB page.   
 
 I referred [here](https://github.com/espressif/esp-idf/tree/master/examples/protocols/http_server/file_serving).   
