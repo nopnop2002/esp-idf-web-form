@@ -83,3 +83,7 @@ I converted using the base64 command.
 ```
 $ base64 image/ESP-IDF.png > html/ESP-IDF.txt
 ```
+
+# Reference
+https://github.com/nopnop2002/esp-idf-pwm-slider
+
