@@ -62,7 +62,7 @@ idf.py erase_flash
 ![web-page-2](https://user-images.githubusercontent.com/6020549/134755973-bea359b9-fba8-4c0d-b58b-145071b859cd.jpg)
 
 # HTML Header
-HTML Header uses html/head.html.   
+HTML header is stored in html/head.html.   
 You can use your favorite CSS.   
 
 # How to browse image data using built-in http server   
