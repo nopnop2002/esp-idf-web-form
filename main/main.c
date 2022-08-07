@@ -172,7 +172,7 @@ void initialise_mdns(void)
 #endif
 }
 
-static void SPIFFS_Directory(char * path) {
+static void directorySPIFFS(char * path) {
 	DIR* dir = opendir(path);
 	assert(dir != NULL);
 	while (true) {
@@ -183,7 +183,7 @@ static void SPIFFS_Directory(char * path) {
 	closedir(dir);
 }
 
-esp_err_t SPIFFS_Mount(char * path, char * label, int max_files) {
+esp_err_t mountSPIFFS(char * path, char * label, int max_files) {
 	esp_vfs_spiffs_conf_t conf = {
 		.base_path = path,
 		.partition_label = label,
@@ -209,15 +209,13 @@ esp_err_t SPIFFS_Mount(char * path, char * label, int max_files) {
 	size_t total = 0, used = 0;
 	ret = esp_spiffs_info(conf.partition_label, &total, &used);
 	if (ret != ESP_OK) {
-		ESP_LOGE(TAG,"Failed to get SPIFFS partition information (%s)",esp_err_to_name(ret));
+		ESP_LOGE(TAG, "Failed to get SPIFFS partition information (%s)",esp_err_to_name(ret));
 	} else {
-		ESP_LOGI(TAG,"Partition size: total: %d, used: %d", total, used);
+		ESP_LOGI(TAG, "Mount %s to %s success", path, label);
+		ESP_LOGI(TAG, "Partition size: total: %d, used: %d", total, used);
+		directorySPIFFS(path);
 	}
 
-	if (ret == ESP_OK) {
-		ESP_LOGI(TAG, "Mount %s to %s success", path, label);
-		SPIFFS_Directory(path);
-	}
 	return ret;
 }
 
@@ -234,7 +232,6 @@ void app_main()
 	ESP_ERROR_CHECK(ret);
 
 	// Initialize WiFi
-	ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
 	wifi_init_sta();
 
 	// Initialize mDNS
@@ -242,7 +239,7 @@ void app_main()
 
 	// Initialize SPIFFS
 	ESP_LOGI(TAG, "Initializing SPIFFS");
-	if (SPIFFS_Mount("/html", "storage", 6) != ESP_OK)
+	if (mountSPIFFS("/html", "storage", 6) != ESP_OK)
 	{
 		ESP_LOGE(TAG, "SPIFFS mount failed");
 		while(1) { vTaskDelay(1); }
