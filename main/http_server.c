@@ -8,6 +8,7 @@
 */
 
 #include <stdio.h>
+#include <inttypes.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <mbedtls/base64.h>
@@ -178,7 +179,7 @@ esp_err_t Image2Base64(char * imageFileName, char * base64FileName)
 
 	// Allocate base64 memory
 	int32_t base64Size = calcBase64EncodedSize(st.st_size);
-	ESP_LOGI(TAG, "base64Size=%d", base64Size);
+	ESP_LOGI(TAG, "base64Size=%"PRIi32, base64Size);
 
 	unsigned char* base64_buffer = NULL;
 	size_t base64_buffer_len = base64Size + 1;
