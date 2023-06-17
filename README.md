@@ -9,15 +9,14 @@ I referred [here](https://github.com/espressif/esp-idf/tree/master/examples/prot
 ![web-page-2](https://user-images.githubusercontent.com/6020549/134755973-bea359b9-fba8-4c0d-b58b-145071b859cd.jpg)
 
 # Software requiment
-esp-idf v4.4/v5.0.   
-This is because this version supports ESP32-C3.   
-
+ESP-IDF V4.4/V5.0.   
+ESP-IDF V5.0 is required when using ESP32-C2.   
 
 # Installation
 ```
 git clone https://github.com/nopnop2002/esp-idf-web-form
 cd esp-idf-web-form
-idf.py set-target {esp32/esp32s2/esp32s3/esp32c3}
+idf.py set-target {esp32/esp32s2/esp32s3/esp32c2/esp32c3}
 idf.py menuconfig
 idf.py flash monitor
 ```
