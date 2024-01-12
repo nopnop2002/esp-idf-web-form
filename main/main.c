@@ -1,9 +1,9 @@
 /*
-	 This example code is in the Public Domain (or CC0 licensed, at your option.)
+	This example code is in the Public Domain (or CC0 licensed, at your option.)
 
-	 Unless required by applicable law or agreed to in writing, this
-	 software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-	 CONDITIONS OF ANY KIND, either express or implied.
+	Unless required by applicable law or agreed to in writing, this
+	software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+	CONDITIONS OF ANY KIND, either express or implied.
 */
 
 #include <stdio.h>
@@ -27,7 +27,7 @@
 
 #include "http_server.h"
 
-#define TAG	"MAIN"
+static const char *TAG = "MAIN";
 
 /* FreeRTOS event group to signal when we are connected*/
 static EventGroupHandle_t s_wifi_event_group;
@@ -166,6 +166,10 @@ void initialise_mdns(void)
 	ESP_ERROR_CHECK( mdns_hostname_set(CONFIG_MDNS_HOSTNAME) );
 	ESP_LOGI(TAG, "mdns hostname set to: [%s]", CONFIG_MDNS_HOSTNAME);
 
+	//initialize service
+	//ESP_ERROR_CHECK( mdns_service_add("ESP32-WebServer", "_http", "_tcp", 8000, NULL, 0) );
+	ESP_ERROR_CHECK( mdns_service_add(NULL, "_http", "_tcp", CONFIG_WEB_PORT, NULL, 0) );
+
 #if 0
 	//set default mDNS instance name
 	ESP_ERROR_CHECK( mdns_instance_name_set("ESP32 with mDNS") );
@@ -249,7 +253,7 @@ void app_main()
 	xQueueHttp = xQueueCreate( 10, sizeof(URL_t) );
 	configASSERT( xQueueHttp );
 
-	/* Get the local IP address */
+	// Get the local IP address
 	esp_netif_ip_info_t ip_info;
 	ESP_ERROR_CHECK(esp_netif_get_ip_info(esp_netif_get_handle_from_ifkey("WIFI_STA_DEF"), &ip_info));
 	char cparam0[64];
