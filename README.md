@@ -33,11 +33,6 @@ Set the following items using menuconfig.
 ![config-wifi-1](https://user-images.githubusercontent.com/6020549/134127430-e55a9a9f-e3db-4766-a806-687ba58bad9a.jpg)
 
 You can use the mDNS hostname instead of the IP address.   
-- esp-idf V4.3 or earlier   
- You will need to manually change the mDNS strict mode according to [this](https://github.com/espressif/esp-idf/issues/6190) instruction.   
-- esp-idf V4.4 or later  
- If you set CONFIG_MDNS_STRICT_MODE = y in sdkconfig.default, the firmware will be built with MDNS_STRICT_MODE = 1.
-
 ![config-wifi-2](https://user-images.githubusercontent.com/6020549/134127158-892fac80-d123-4fd8-af16-f0b234a0efba.jpg)
 
 You can use static IP.   
