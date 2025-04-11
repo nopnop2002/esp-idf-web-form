@@ -46,7 +46,7 @@ You can use static IP.
 Open your brouser, and put address in address bar.   
 You can use the mDNS hostname instead of the IP address.   
 Default mDNS name is esp32-server.local.   
-Input text/checkbox/radio and submit.   
+Input text/checkbox/radio/select and submit.   
 The read data is saved in the NVS area.   
 You can clear the NVS area with this command:   
 ```
