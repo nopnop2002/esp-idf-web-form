@@ -6,7 +6,7 @@ No library other than ESP-IDF is required to read the data from the WEB page.
 
 I referred [here](https://github.com/espressif/esp-idf/tree/master/examples/protocols/http_server/file_serving).   
 
-![web-page-2](https://user-images.githubusercontent.com/6020549/134755973-bea359b9-fba8-4c0d-b58b-145071b859cd.jpg)
+![Image](https://github.com/user-attachments/assets/342d2e60-c8b0-41bf-a7bd-1276a9c61932)
 
 # Software requiment
 ESP-IDF V5.0 or later.   
