@@ -173,7 +173,7 @@ esp_err_t wifi_init_sta()
 	return ret_value;
 }
 
-void initialise_mdns(void)
+void initialize_mdns(void)
 {
 	//initialize mDNS
 	ESP_ERROR_CHECK( mdns_init() );
@@ -254,7 +254,7 @@ void app_main()
 	ESP_ERROR_CHECK(wifi_init_sta());
 
 	// Initialize mDNS
-	initialise_mdns();
+	initialize_mdns();
 
 	// Initialize SPIFFS
 	ESP_ERROR_CHECK(mountSPIFFS("/html", "storage", 6));

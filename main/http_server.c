@@ -307,15 +307,15 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 
 	httpd_resp_sendstr_chunk(req, "<h2>input number</h2>");
 	httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/post\">");
-	httpd_resp_sendstr_chunk(req, "number1(2 Digit): <input type=\"number\" class=\"dig2\" name=\"number1\" value=\"");
+	httpd_resp_sendstr_chunk(req, "number1(2 Digit): <input type=\"number\" class=\"dig2\" name=\"number1\" min=\"-99\" max=\"99\" value=\"");
 	if (strlen(number1)) httpd_resp_sendstr_chunk(req, number1);
 	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
-	httpd_resp_sendstr_chunk(req, "number2(4 Digit): <input type=\"number\" class=\"dig4\" name=\"number2\" value=\"");
+	httpd_resp_sendstr_chunk(req, "number2(4 Digit): <input type=\"number\" class=\"dig4\" name=\"number2\" min=\"-9999\" max=\"9999\" value=\"");
 	if (strlen(number2)) httpd_resp_sendstr_chunk(req, number2);
 	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
-	httpd_resp_sendstr_chunk(req, "number3(6 Digit): <input type=\"number\" class=\"dig6\" name=\"number3\" value=\"");
+	httpd_resp_sendstr_chunk(req, "number3(6 Digit): <input type=\"number\" class=\"dig6\" name=\"number3\" min=\"-999999\" max=\"999999\" value=\"");
 	if (strlen(number3)) httpd_resp_sendstr_chunk(req, number3);
 	httpd_resp_sendstr_chunk(req, "\">");
 	httpd_resp_sendstr_chunk(req, "<br>");
