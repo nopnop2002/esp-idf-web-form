@@ -1,10 +1,10 @@
-/* HTTP Server Example
+/*	HTTP Server Example
 
-	 This example code is in the Public Domain (or CC0 licensed, at your option.)
+	This example code is in the Public Domain (or CC0 licensed, at your option.)
 
-	 Unless required by applicable law or agreed to in writing, this
-	 software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-	 CONDITIONS OF ANY KIND, either express or implied.
+	Unless required by applicable law or agreed to in writing, this
+	software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+	CONDITIONS OF ANY KIND, either express or implied.
 */
 
 #include <stdio.h>
@@ -66,10 +66,10 @@ esp_err_t load_key_value(char * key, char * value, size_t size)
 	// Read
 	size_t _size = size;
 	err = nvs_get_str(my_handle, key, value, &_size);
-	ESP_LOGI(TAG, "nvs_get_str err=%d", err);
+	ESP_LOGD(__FUNCTION__, "nvs_get_str[%s] err=%d", key, err);
 	//if (err != ESP_OK && err != ESP_ERR_NVS_NOT_FOUND) return err;
 	if (err != ESP_OK) return err;
-	ESP_LOGI(TAG, "err=%d key=[%s] value=[%s] _size=%d", err, key, value, _size);
+	ESP_LOGD(__FUNCTION__, "err=%d key=[%s] value=[%s] _size=%d", err, key, value, _size);
 
 	// Close
 	nvs_close(my_handle);
@@ -82,13 +82,13 @@ int find_value(char * key, char * parameter, char * value)
 	//char * addr1;
 	char * addr1 = strstr(parameter, key);
 	if (addr1 == NULL) return 0;
-	ESP_LOGD(TAG, "addr1=%s", addr1);
+	ESP_LOGD(__FUNCTION__, "addr1=%s", addr1);
 
 	char * addr2 = addr1 + strlen(key);
-	ESP_LOGD(TAG, "addr2=[%s]", addr2);
+	ESP_LOGD(__FUNCTION__, "addr2=[%s]", addr2);
 
 	char * addr3 = strstr(addr2, "&");
-	ESP_LOGD(TAG, "addr3=%p", addr3);
+	ESP_LOGD(__FUNCTION__, "addr3=%p", addr3);
 	if (addr3 == NULL) {
 		strcpy(value, addr2);
 	} else {
@@ -97,7 +97,7 @@ int find_value(char * key, char * parameter, char * value)
 		strncpy(value, addr2, length);
 		value[length] = 0;
 	}
-	ESP_LOGI(TAG, "key=[%s] value=[%s]", key, value);
+	ESP_LOGD(__FUNCTION__, "key=[%s] value=[%s]", key, value);
 	return strlen(value);
 }
 
@@ -257,11 +257,12 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	httpd_resp_sendstr_chunk(req, "<body>");
 	httpd_resp_sendstr_chunk(req, "<h1>WEB Form Demo using ESP-IDF</h1>");
 
+	// text
 	strcpy(key, "submit1");
 	char text1[32] = {0};
 	char text2[32] = {0};
 	err = load_key_value(key, parameter, sizeof(parameter));
-	ESP_LOGI(TAG, "%s=%d", key, err);
+	ESP_LOGI(TAG, "load_key_value [%s]=%d", key, err);
 	if (err == ESP_OK) {
 		ESP_LOGI(TAG, "parameter=[%s]", parameter);
 		find_value("text1=", parameter, text1);
@@ -281,7 +282,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit1\">");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
-	ESP_LOGI(TAG, "%s=%d", key, err);
+	ESP_LOGI(TAG, "load_key_value [%s]=%d", key, err);
 	if (err == ESP_OK) {
 		ESP_LOGI(TAG, "parameter=[%s]", parameter);
 		httpd_resp_sendstr_chunk(req, key);
@@ -290,14 +291,14 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	}
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
+	// number
 	httpd_resp_sendstr_chunk(req, "<hr>");
-
 	strcpy(key, "submit2");
 	char number1[16] = {0};
 	char number2[16] = {0};
 	char number3[16] = {0};
 	err = load_key_value(key, parameter, sizeof(parameter));
-	ESP_LOGI(TAG, "%s=%d", key, err);
+	ESP_LOGI(TAG, "load_key_value [%s]=%d", key, err);
 	if (err == ESP_OK) {
 		ESP_LOGI(TAG, "parameter=[%s]", parameter);
 		find_value("number1=", parameter, number1);
@@ -322,7 +323,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit2\">");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
-	ESP_LOGI(TAG, "%s=%d", key, err);
+	ESP_LOGI(TAG, "load_key_value [%s]=%d", key, err);
 	if (err == ESP_OK) {
 		ESP_LOGI(TAG, "parameter=[%s]", parameter);
 		httpd_resp_sendstr_chunk(req, key);
@@ -331,14 +332,14 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	}
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
+	// checkbox
 	httpd_resp_sendstr_chunk(req, "<hr>");
-
 	strcpy(key, "submit3");
 	char check1[4] = {0};
 	char check2[4] = {0};
 	char check3[4] = {0};
 	err = load_key_value(key, parameter, sizeof(parameter));
-	ESP_LOGI(TAG, "%s=%d", key, err);
+	ESP_LOGI(TAG, "load_key_value [%s]=%d", key, err);
 	if (err == ESP_OK) {
 		ESP_LOGI(TAG, "parameter=[%s]", parameter);
 		find_value("check1=", parameter, check1);
@@ -367,7 +368,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit3\">");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
-	ESP_LOGI(TAG, "%s=%d", key, err);
+	ESP_LOGI(TAG, "load_key_value [%s]=%d", key, err);
 	if (err == ESP_OK) {
 		ESP_LOGI(TAG, "parameter=[%s]", parameter);
 		httpd_resp_sendstr_chunk(req, key);
@@ -376,12 +377,12 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	}
 	httpd_resp_sendstr_chunk(req, "</form><br>");
 
+	// radio
 	httpd_resp_sendstr_chunk(req, "<hr>");
-
 	strcpy(key, "submit4");
 	char radio[16] = {0};
 	err = load_key_value(key, parameter, sizeof(parameter));
-	ESP_LOGI(TAG, "%s=%d", key, err);
+	ESP_LOGI(TAG, "load_key_value [%s]=%d", key, err);
 	if (err == ESP_OK) {
 		ESP_LOGI(TAG, "parameter=[%s]", parameter);
 		find_value("radio=", parameter, radio);
@@ -409,7 +410,50 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit4\">");
 
 	err = load_key_value(key, parameter, sizeof(parameter));
-	ESP_LOGI(TAG, "%s=%d", key, err);
+	ESP_LOGI(TAG, "load_key_value [%s]=%d", key, err);
+	if (err == ESP_OK) {
+		ESP_LOGI(TAG, "parameter=[%s]", parameter);
+		httpd_resp_sendstr_chunk(req, key);
+		httpd_resp_sendstr_chunk(req, ":");
+		httpd_resp_sendstr_chunk(req, parameter);
+	}
+	httpd_resp_sendstr_chunk(req, "</form><br>");
+
+	// select
+	httpd_resp_sendstr_chunk(req, "<hr>");
+	strcpy(key, "submit5");
+	char choice[16] = {0};
+	err = load_key_value(key, parameter, sizeof(parameter));
+	ESP_LOGI(TAG, "load_key_value [%s]=%d", key, err);
+	if (err == ESP_OK) {
+		ESP_LOGI(TAG, "parameter=[%s]", parameter);
+		find_value("choice=", parameter, choice);
+		ESP_LOGI(TAG, "choice=[%s]", choice);
+	}
+
+	httpd_resp_sendstr_chunk(req, "<h2>select chice</h2>");
+	httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/post\">");
+	httpd_resp_sendstr_chunk(req, "<select name=\"choice\">");
+	if (strcmp(choice, "first") == 0) {
+		httpd_resp_sendstr_chunk(req, "<option value=\"first\" selected>1st value</option>");
+	} else {
+		httpd_resp_sendstr_chunk(req, "<option value=\"first\">1st value</option>");
+	}
+	if (strcmp(choice, "second") == 0) {
+		httpd_resp_sendstr_chunk(req, "<option value=\"second\" selected>2nd value</option>");
+	} else {
+		httpd_resp_sendstr_chunk(req, "<option value=\"second\">2nd value</option>");
+	}
+	if (strcmp(choice, "third") == 0) {
+		httpd_resp_sendstr_chunk(req, "<option value=\"third\" selected>3rd value</option>");
+	} else {
+		httpd_resp_sendstr_chunk(req, "<option value=\"third\">3rd value</option>");
+	}
+
+	httpd_resp_sendstr_chunk(req, "<input type=\"submit\" name=\"submit\" value=\"submit5\">");
+
+	err = load_key_value(key, parameter, sizeof(parameter));
+	ESP_LOGI(TAG, "load_key_value [%s]=%d", key, err);
 	if (err == ESP_OK) {
 		ESP_LOGI(TAG, "parameter=[%s]", parameter);
 		httpd_resp_sendstr_chunk(req, key);
@@ -560,6 +604,9 @@ void http_server_task(void *pvParameters)
 			if (err != ESP_OK) {
 				ESP_LOGE(TAG, "Error (%s) loading to NVS", esp_err_to_name(err));
 			}
+		} else {
+			ESP_LOGE(TAG, "xQueueReceive fail");
+			break;
 		}
 	}
 

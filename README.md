@@ -52,8 +52,8 @@ You can clear the NVS area with this command:
 ```
 idf.py erase_flash
 ```
-![web-page-1](https://user-images.githubusercontent.com/6020549/134755970-15838cea-12ce-4c81-a7b3-35c298397b4a.jpg)
-![web-page-2](https://user-images.githubusercontent.com/6020549/134755973-bea359b9-fba8-4c0d-b58b-145071b859cd.jpg)
+![Image](https://github.com/user-attachments/assets/862645da-b884-4c60-a1db-2a5381f24894)
+![Image](https://github.com/user-attachments/assets/342d2e60-c8b0-41bf-a7bd-1276a9c61932)
 
 # HTML Header
 HTML header is stored in html/head.html.   
