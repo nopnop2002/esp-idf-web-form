@@ -44,8 +44,6 @@ You can use static IP.
 
 # How to use
 Open your brouser, and put address in address bar.   
-You can use the mDNS hostname instead of the IP address.   
-Default mDNS name is esp32-server.local.   
 Input text/checkbox/radio/select and submit.   
 The read data is saved in the NVS area.   
 You can clear the NVS area with this command:   
@@ -54,6 +52,10 @@ idf.py erase_flash
 ```
 ![Image](https://github.com/user-attachments/assets/54e9928a-3501-4b78-a892-18b0e9ff293c)
 ![Image](https://github.com/user-attachments/assets/247123ec-1d06-40b0-b17f-1d978951fea6)
+
+You can use the mDNS hostname instead of the IP address.   
+Default mDNS name is esp32-server.local.   
+![Image](https://github.com/user-attachments/assets/0d3ae388-73bb-41d6-ae46-2a52b6237017)
 
 # HTML Header
 HTML header is stored in html/head.html.   
