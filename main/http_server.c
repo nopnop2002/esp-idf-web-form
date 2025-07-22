@@ -431,7 +431,7 @@ static esp_err_t root_get_handler(httpd_req_t *req)
 		ESP_LOGI(TAG, "choice=[%s]", choice);
 	}
 
-	httpd_resp_sendstr_chunk(req, "<h2>select chice</h2>");
+	httpd_resp_sendstr_chunk(req, "<h2>select choice</h2>");
 	httpd_resp_sendstr_chunk(req, "<form method=\"post\" action=\"/post\">");
 	httpd_resp_sendstr_chunk(req, "<select name=\"choice\">");
 	if (strcmp(choice, "first") == 0) {

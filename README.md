@@ -6,7 +6,7 @@ No library other than ESP-IDF is required to read the data from the WEB page.
 
 I referred [here](https://github.com/espressif/esp-idf/tree/master/examples/protocols/http_server/file_serving).   
 
-![Image](https://github.com/user-attachments/assets/342d2e60-c8b0-41bf-a7bd-1276a9c61932)
+![Image](https://github.com/user-attachments/assets/247123ec-1d06-40b0-b17f-1d978951fea6)
 
 # Software requiment
 ESP-IDF V5.0 or later.   
@@ -52,8 +52,8 @@ You can clear the NVS area with this command:
 ```
 idf.py erase_flash
 ```
-![Image](https://github.com/user-attachments/assets/862645da-b884-4c60-a1db-2a5381f24894)
-![Image](https://github.com/user-attachments/assets/342d2e60-c8b0-41bf-a7bd-1276a9c61932)
+![Image](https://github.com/user-attachments/assets/54e9928a-3501-4b78-a892-18b0e9ff293c)
+![Image](https://github.com/user-attachments/assets/247123ec-1d06-40b0-b17f-1d978951fea6)
 
 # HTML Header
 HTML header is stored in html/head.html.   
