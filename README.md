@@ -8,7 +8,7 @@ I referred [here](https://github.com/espressif/esp-idf/tree/master/examples/prot
 
 ![Image](https://github.com/user-attachments/assets/247123ec-1d06-40b0-b17f-1d978951fea6)
 
-# Software requiment
+# Software requirements
 ESP-IDF V5.0 or later.   
 ESP-IDF V4.4 release branch reached EOL in July 2024.   
 ESP-IDF V5.1 is required when using ESP32-C6.   
