@@ -4,7 +4,7 @@ ESP-IDF contains a lot of example code, but there is no example to create FORM o
 This project reads value from FORM on the WEB and save in the NVS area.   
 No library other than ESP-IDF is required to read the data from the WEB page.   
 
-I referred [here](https://github.com/espressif/esp-idf/tree/master/examples/protocols/http_server/file_serving).   
+I used [this](https://github.com/espressif/esp-idf/tree/master/examples/protocols/http_server/file_serving) as a reference.   
 
 ![Image](https://github.com/user-attachments/assets/247123ec-1d06-40b0-b17f-1d978951fea6)
 
